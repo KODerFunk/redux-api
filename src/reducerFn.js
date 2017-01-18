@@ -1,5 +1,7 @@
 "use strict";
 
+import pathvarsToKey from "./pathvarsToKey";
+
 /* eslint no-case-declarations: 0 */
 /**
  * Reducer contructor
@@ -9,9 +11,9 @@
  * @param  {Function} reducer      custom reducer function
  * @return {Function}              reducer function
  */
-export default function reducerFn(initialState, actions={}, reducer) {
+export default function reducerFn(initialState, actions={}, reducer, cached) {
   const { actionFetch, actionSuccess, actionFail, actionReset } = actions;
-  return (state=initialState, action)=> {
+  function entryReducer(state = initialState, action) {
     switch (action.type) {
       case actionFetch:
         return {
@@ -44,5 +46,22 @@ export default function reducerFn(initialState, actions={}, reducer) {
       default:
         return reducer ? reducer(state, action) : state;
     }
-  };
+  }
+
+  if (cached) {
+    return function (state = {}, action) {
+      // if (Object.values(actions).indexOf(action.type) > -1) {
+      const { pathvars } = action.request || {};
+      // console.log('>> action >>', action);
+      const branchKey = pathvarsToKey(pathvars);
+      const branchState = state[branchKey];
+      let updatedBranch = {};
+      updatedBranch[branchKey] = entryReducer(branchState, action);
+      return {
+        ...state,
+        ...updatedBranch
+      };
+    };
+  }
+  return entryReducer;
 }

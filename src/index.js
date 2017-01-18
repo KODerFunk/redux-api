@@ -7,8 +7,7 @@ import reducerFn from "./reducerFn";
 import actionFn from "./actionFn";
 import transformers from "./transformers";
 import async from "./async";
-
-// export { transformers, async };
+import pathvarsToKey from "./pathvarsToKey";
 
 /**
  * Default configuration for each endpoint
@@ -86,6 +85,8 @@ export default function reduxApi(config, baseConfig) {
       this.use("rootUrl", rootUrl);
       return this;
     },
+    cachedState: {},
+    createInitialState: {},
     actions: {},
     reducers: {},
     events: {}
@@ -123,6 +124,7 @@ export default function reduxApi(config, baseConfig) {
       holder: fetchHolder,
       broadcast,
       virtual: !!opts.virtual,
+      cached: !!opts.cached,
       reducerName,
       actions: memo.actions,
       prefetch,
@@ -137,21 +139,28 @@ export default function reduxApi(config, baseConfig) {
     memo.actions[key] = actionFn(url, key, options, ACTIONS, meta);
 
     if (!meta.virtual && !memo.reducers[reducerName]) {
-      const initialState = {
+      const createInitialState = () => ({
         sync: false,
         syncing: false,
         loading: false,
         data: transformer()
-      };
+      });
+      memo.createInitialState[reducerName] = createInitialState;
+      if (opts.cached) {
+        memo.cachedState[reducerName] = (entryState, pathvars) => {
+          return entryState[pathvarsToKey(pathvars)];
+        };
+      }
+      const initialState = createInitialState();
       const reducer = opts.reducer ? opts.reducer.bind(memo) : null;
-      memo.reducers[reducerName] = reducerFn(initialState, ACTIONS, reducer);
+      memo.reducers[reducerName] = reducerFn(initialState, ACTIONS, reducer, opts.cached);
     }
     memo.events[reducerName] = ACTIONS;
     return memo;
   }
 
   return Object.keys(config).reduce(
-    (memo, key)=> fnConfigCallback(memo, config[key], key, config), cfg);
+    (memo, key) => fnConfigCallback(memo, config[key], key), cfg);
 }
 
 reduxApi.transformers = transformers;

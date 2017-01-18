@@ -3,6 +3,7 @@
 import fastApply from "fast-apply";
 import libUrl from "url";
 import urlTransform from "./urlTransform";
+import pathvarsToKey from "./pathvarsToKey";
 import merge from "./utils/merge";
 import get from "./utils/get";
 import fetchResolver from "./fetchResolver";
@@ -210,7 +211,7 @@ export default function actionFn(url, name, options, ACTIONS={}, meta={}) {
     const isServer = meta.holder ? meta.holder.server : false;
     return (dispatch, getState)=> {
       const state = getState();
-      const store = state[name];
+      const store = meta.cached ? state[name] && state[name][pathvarsToKey(pathvars)] : state[name];
       if (!isServer && store && store.sync) {
         callback(null, store.data);
         return;

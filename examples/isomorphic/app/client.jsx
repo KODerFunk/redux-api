@@ -22,9 +22,9 @@ reduxApi.use("fetch", adapterFetch(fetch));
 
 // Prepare store
 const reducer = combineReducers(reduxApi.reducers);
-const finalCreateStore = applyMiddleware(thunk)(createStore);
-const initialState = window.$REDUX_STATE;
-const store = initialState ? finalCreateStore(reducer, initialState) : finalCreateStore(reducer);
+const initialState = window.$REDUX_STATE || {};
+const devExtension = window.devToolsExtension ? window.devToolsExtension() : f => f;
+const store = createStore(reducer, initialState, compose(applyMiddleware(thunk), devExtension));
 delete window.$REDUX_STATE;
 
 const childRoutes = routes(store);

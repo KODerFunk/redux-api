@@ -11,6 +11,7 @@ const URL = "https://api.github.com";
 export default reduxApi({
   userRepos: {
     url: `${URL}/users/:user/repos`,
+    cached: true,
     options: { headers },
     transformer(data) {
       return map(data, (item)=> {

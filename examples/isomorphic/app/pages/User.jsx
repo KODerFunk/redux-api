@@ -1,6 +1,7 @@
 import React, { PropTypes } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router";
+import rest from "../utils/rest";
 
 class User extends React.Component {
   render() {
@@ -23,8 +24,10 @@ User.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-function select(state) {
-  return {userRepos: state.userRepos };
+function select(state, ownProps) {
+  const { user } = ownProps.params;
+  return { userRepos: rest.cachedState.userRepos(state.userRepos, { user }) };
+  // return { userRepos: rest.userRepos.cachedState({ user }) };
 }
 
 export default connect(select)(User);
