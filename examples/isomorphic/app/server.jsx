@@ -18,7 +18,8 @@ import routes from "./routes/routes";
 // Redux-api
 import "isomorphic-fetch";
 import reduxApi from "./utils/rest";
-import adapterFetch from "redux-api/lib/adapters/fetch";
+// import adapterFetch from "redux-api/lib/adapters/fetch";
+import adapterFetch from "../../../lib/adapters/fetch";
 
 reduxApi
   .use("fetch", adapterFetch(fetch))

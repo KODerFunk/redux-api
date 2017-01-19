@@ -1,6 +1,7 @@
 /* eslint import/no-unresolved: 0 */
 /* eslint import/extensions: 0 */
-import reduxApi from "redux-api";
+// import reduxApi from "redux-api";
+import reduxApi from "../../../../lib";
 import map from "lodash/map";
 
 const headers = {
