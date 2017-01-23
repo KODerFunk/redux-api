@@ -148,7 +148,7 @@ export default function reduxApi(config, baseConfig) {
       memo.createInitialState[reducerName] = createInitialState;
       if (opts.cached) {
         memo.cachedState[reducerName] = (entryState, pathvars) => {
-          return entryState[pathvarsToKey(pathvars)];
+          return entryState[pathvarsToKey(pathvars)] || createInitialState();
         };
       }
       const initialState = createInitialState();
