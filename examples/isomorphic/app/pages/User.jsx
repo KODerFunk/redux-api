@@ -24,10 +24,9 @@ User.propTypes = {
   dispatch: PropTypes.func.isRequired
 };
 
-function select(state, ownProps) {
+function mapStateToProps(state, ownProps) {
   const { user } = ownProps.params;
   return { userRepos: rest.cachedState.userRepos(state.userRepos, { user }) };
-  // return { userRepos: rest.userRepos.cachedState({ user }) };
 }
 
-export default connect(select)(User);
+export default connect(mapStateToProps)(User);
