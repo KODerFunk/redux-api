@@ -50,7 +50,9 @@ export default function reducerFn(initialState, actions={}, reducer, cached) {
 
   if (cached) {
     return function (state = {}, action) {
-      // if (Object.values(actions).indexOf(action.type) > -1) {
+      if (Object.values(actions).indexOf(action.type) === -1) {
+        return reducer ? reducer(state, action) : state;
+      }
       const { pathvars } = action.request || {};
       // console.log('>> action >>', action);
       const branchKey = pathvarsToKey(pathvars);
